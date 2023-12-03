@@ -11,16 +11,10 @@ fun main() {
         }
     }
 
-    fun PotentialPart.surroundingCoordinates(input: List<String>) = sequence {
-        val ranges = sequenceOf(
-            line - 1 to (range.first - 1 .. range.last + 1),
-            line to (range.first - 1).let { it .. it },
-            line to (range.last + 1).let { it .. it },
-            line + 1 to (range.first - 1 .. range.last + 1)
-        )
-        for ((lineNr, cells) in ranges) {
+    fun PotentialPart.surroundingArea(input: List<String>) = sequence {
+        for (lineNr in (line - 1 .. line + 1)) {
             val checkLine = input.getOrNull(lineNr) ?: continue
-            for (cellNr in cells) {
+            for (cellNr in (range.first - 1 .. range.last + 1)) {
                 checkLine.getOrNull(cellNr) ?: continue
                 yield(Coord(cellNr, lineNr))
             }
@@ -29,7 +23,7 @@ fun main() {
 
     fun part1(input: List<String>): Int {
         fun PotentialPart.isPartNumber(input: List<String>): Boolean {
-            return this.surroundingCoordinates(input)
+            return this.surroundingArea(input)
                 .map { input[it.y][it.x] }
                 .any { !it.isDigit() && it != '.' }
         }
@@ -43,7 +37,7 @@ fun main() {
 
     fun part2(input: List<String>): Int {
         fun PotentialPart.toGearOrNull(input: List<String>): Coord? {
-            return surroundingCoordinates(input)
+            return surroundingArea(input)
                 .filter { (x, y) -> input[y][x] == '*' }
                 .firstOrNull()
         }
